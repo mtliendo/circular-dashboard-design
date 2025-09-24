@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-/* switching from Lucide to Heroicons for different icon style */
 import {
   ArrowRightIcon,
   CheckCircleIcon,
@@ -14,6 +13,7 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline"
 import Link from "next/link"
+import { SignedOut, SignedIn, OrganizationSwitcher, OrganizationList, CreateOrganization, UserProfile, UserButton, SignInButton } from "@clerk/nextjs"
 
 export function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
@@ -52,14 +52,26 @@ export function LandingPage() {
                 </Link>
               </div>
             </div>
+
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                Log in
-              </Link>
-              <Button asChild>
-                <Link href="/dashboard">Try for free</Link>
-              </Button>
+              <SignedOut>
+                <Button asChild>
+                  <SignInButton>
+                    <span>Sign in</span>
+                  </SignInButton>
+                </Button>
+              </SignedOut>
+
+
             </div>
+
+            <SignedIn>
+              <div className="flex items-center space-x-4">
+                <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Dashboard
+                </Link>
+              </div>
+            </SignedIn>
           </div>
         </div>
       </nav>
@@ -147,9 +159,8 @@ export function LandingPage() {
                   </svg>
 
                   <div
-                    className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-                      showCheckmark ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                    }`}
+                    className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${showCheckmark ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                      }`}
                   >
                     <CheckCircleIcon className="w-10 h-10 text-primary" />
                   </div>

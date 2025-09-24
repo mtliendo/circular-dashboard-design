@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { useSettings } from "@/contexts/settings-context"
 import {
   Home,
   FolderOpen,
@@ -20,6 +19,7 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
+import { OrganizationSwitcher, useAuth } from "@clerk/nextjs"
 
 // Mock data
 const mockProjects = [{ id: 1, name: "Demo Project #1", status: "active", tasks: 8, members: 3 }]
@@ -32,27 +32,28 @@ const mockUser = {
 export function CircularDashboard() {
   const [activeSection, setActiveSection] = useState("projects")
   const [projects, setProjects] = useState(mockProjects)
+  const { has } = useAuth()
 
-  const { plan, memberType, canSeeBilling, canSeeDeveloper, canCreateProject, canDeleteProject, getPlanPrice } =
-    useSettings()
+
+
 
   const deleteProject = (projectId: number) => {
-    if (canDeleteProject()) {
-      setProjects(projects.filter((p) => p.id !== projectId))
-    }
+
+    setProjects(projects.filter((p) => p.id !== projectId))
+
   }
 
   const createProject = () => {
-    if (canCreateProject()) {
-      const newProject = {
-        id: Date.now(),
-        name: `New Project ${projects.length + 1}`,
-        status: "active" as const,
-        tasks: 0,
-        members: 1,
-      }
-      setProjects([...projects, newProject])
+
+    const newProject = {
+      id: Date.now(),
+      name: `New Project ${projects.length + 1}`,
+      status: "active" as const,
+      tasks: 0,
+      members: 1,
     }
+    setProjects([...projects, newProject])
+
   }
 
   return (
@@ -89,7 +90,7 @@ export function CircularDashboard() {
             Projects
           </Button>
 
-          {canSeeBilling() && (
+          {has?.({ permission: "developer_access:can_read" }) && (
             <Button
               variant={activeSection === "billing" ? "secondary" : "ghost"}
               className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
@@ -100,16 +101,17 @@ export function CircularDashboard() {
             </Button>
           )}
 
-          {canSeeDeveloper() && (
-            <Button
-              variant={activeSection === "developer" ? "secondary" : "ghost"}
-              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-              onClick={() => setActiveSection("developer")}
-            >
-              <Code className="w-4 h-4 mr-3" />
-              Developer
-            </Button>
-          )}
+
+
+          <Button
+            variant={activeSection === "developer" ? "secondary" : "ghost"}
+            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+            onClick={() => setActiveSection("developer")}
+          >
+            <Code className="w-4 h-4 mr-3" />
+            Developer
+          </Button>
+
         </nav>
 
         {/* User Info */}
@@ -120,7 +122,7 @@ export function CircularDashboard() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-sidebar-foreground truncate">{mockUser.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{plan} Plan</p>
+              <p className="text-xs text-muted-foreground truncate">Pro Plan</p>
             </div>
           </div>
         </div>
@@ -152,6 +154,9 @@ export function CircularDashboard() {
                 <Settings className="w-4 h-4" />
               </Link>
             </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <OrganizationSwitcher />
+            </Button>
           </div>
         </header>
 
@@ -165,12 +170,12 @@ export function CircularDashboard() {
                   <h2 className="text-lg font-medium">Your Projects</h2>
                   <p className="text-sm text-muted-foreground">Manage and organize your work</p>
                 </div>
-                {canCreateProject() && (
-                  <Button onClick={createProject} className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    Create Project
-                  </Button>
-                )}
+
+                <Button onClick={createProject} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Create Project
+                </Button>
+
               </div>
 
               {/* Projects Grid */}
@@ -190,16 +195,16 @@ export function CircularDashboard() {
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
-                          {canDeleteProject() && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => deleteProject(project.id)}
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteProject(project.id)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
@@ -261,7 +266,7 @@ export function CircularDashboard() {
             </div>
           )}
 
-          {activeSection === "billing" && canSeeBilling() && (
+          {activeSection === "billing" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-medium">Billing & Usage</h2>
@@ -275,8 +280,8 @@ export function CircularDashboard() {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{plan} Plan</p>
-                      <p className="text-sm text-muted-foreground">${getPlanPrice()}/month</p>
+                      <p className="font-medium">Pro Plan</p>
+                      <p className="text-sm text-muted-foreground">$10/month</p>
                     </div>
                     <Badge>Active</Badge>
                   </div>
@@ -290,7 +295,7 @@ export function CircularDashboard() {
             </div>
           )}
 
-          {activeSection === "developer" && canSeeDeveloper() && (
+          {activeSection === "developer" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-medium">Developer Settings</h2>

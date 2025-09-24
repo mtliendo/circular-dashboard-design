@@ -6,11 +6,12 @@ import { Analytics } from "@vercel/analytics/next"
 import { SettingsProvider } from "@/contexts/settings-context"
 import { Suspense } from "react"
 import "./globals.css"
+import { ClerkProvider } from "@clerk/nextjs"
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Circular",
+  description: "A Linear Clone",
+  generator: "v0.app"
 }
 
 export default function RootLayout({
@@ -19,13 +20,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>
-          <SettingsProvider>{children}</SettingsProvider>
-          <Analytics />
-        </Suspense>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+          <Suspense fallback={null}>
+            <SettingsProvider>{children}</SettingsProvider>
+            <Analytics />
+          </Suspense>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
