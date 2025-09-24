@@ -36,6 +36,29 @@ export function BillingPage() {
           <p className="text-muted-foreground">Manage your subscription and view usage details</p>
         </div>
 
+        {/* Billing Portal Access */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Manage Your Subscription</h2>
+                <p className="text-muted-foreground">
+                  Update payment methods, view invoices, change plans, and manage your billing preferences.
+                </p>
+              </div>
+              <Button asChild size="lg">
+                <a
+                  href="https://billing.stripe.com/p/login/test_14AbJ1d2HbAv4gO6RW2Ry00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open Billing Portal
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Current Plan */}
         <Card>
           <CardHeader>
@@ -59,6 +82,17 @@ export function BillingPage() {
                 </Badge>
                 <p className="text-sm text-muted-foreground">Next billing: Feb 1, 2025</p>
               </div>
+            </div>
+            <div className="mt-4 pt-4 border-t">
+              <Button asChild className="w-full">
+                <a
+                  href="https://billing.stripe.com/p/login/test_14AbJ1d2HbAv4gO6RW2Ry00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Manage Billing & Subscription
+                </a>
+              </Button>
             </div>
           </CardContent>
         </Card>
