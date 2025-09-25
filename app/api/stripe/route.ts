@@ -1,10 +1,10 @@
-// app/api/webhook/stripe/route.ts
+
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { clerkClient, createClerkClient } from '@clerk/nextjs/server'
 
-// Ensure Node runtime (not Edge)
-export const runtime = 'nodejs'
+// stripe listen --forward-to localhost:3000/api/stripe
+// stripe trigger checkout.session.completed
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-08-27.basil' })
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -46,32 +46,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true })
     }
 
-    // Figure out which organization to update by looking at the client reference id
-    // Prefer passing orgId in session.metadata when you created the session.
-    const orgId = session.client_reference_id ?? /* fallback: look up from customer or your DB */ null
-    if (!orgId) {
-      console.warn('No orgId available for session', session.id)
-      return NextResponse.json({ received: true })
-    }
+    // Figure out which organization to update by looking at the client reference id from  pricing table
+    const orgId = session.client_reference_id!
 
     // Update Clerk org based on plan
     if (plan === 'pro') {
       // Raise member cap to 10 and tag metadata
-
       await clerk.organizations.updateOrganization(orgId, {
         maxAllowedMemberships: 10,
         privateMetadata: { plan: 'pro' },
       })
     }
-    else if (plan === 'enterprise') {
+    if (plan === 'enterprise') {
       await clerk.organizations.updateOrganization(orgId, {
         maxAllowedMemberships: 100, // TODO: set to infinity
         privateMetadata: { plan: 'enterprise' },
       })
     }
 
+
     return NextResponse.json({ received: true })
   }
 
   return NextResponse.json({ received: true })
 }
+
+/* todo:
+- get ord id and pass to pricing table on frontend
+- test webhook works using commands at top of file
+-create the right roles sets
+- gate content based on permissiosn
+- figure out how to make member limit infinity
+- 
+*/
