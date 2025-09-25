@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import Script from "next/script"
+import { useAuth } from "@clerk/nextjs"
 
 // Declare the custom Stripe pricing table element
 declare global {
@@ -13,13 +14,15 @@ declare global {
       'stripe-pricing-table': {
         'pricing-table-id': string
         'publishable-key': string
-        'client-reference-id'?: string
+        'client-reference-id': string
       }
     }
   }
 }
 
 export function PricingPage() {
+  const { orgId } = useAuth()
+  console.log("orgId", orgId)
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -63,7 +66,7 @@ export function PricingPage() {
           <stripe-pricing-table
             pricing-table-id="prctbl_1SB0ydEq3PQJrkWnG2SnFUb2"
             publishable-key="pk_test_51SAxb9Eq3PQJrkWnffKNilKA8DTrZa4t4VRPKO88UzCZbgt83wawAEJN655a0F19dFQGhx3UXlsDE77ScHk7YCN700s9rtj8mj"
-            client-reference-id={clerkOrgId}>
+            client-reference-id={orgId as string}>
           </stripe-pricing-table>
         </div>
 

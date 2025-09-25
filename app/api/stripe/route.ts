@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { clerkClient, createClerkClient } from '@clerk/nextjs/server'
 
-// stripe listen --forward-to localhost:3000/api/stripe
-// stripe trigger checkout.session.completed
+// 1. stripe listen --forward-to localhost:3000/api/stripe
+// 2. use apps pricing table to test webhook
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-08-27.basil' })
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -16,6 +16,8 @@ const PLAN_BY_PRICE: Record<string, 'pro' | 'enterprise'> = {
 }
 
 export async function POST(req: Request) {
+  console.log("secret key", process.env.CLERK_SECRET_KEY!)
+  console.log('endpoint secret', endpointSecret)
   // ask Kyle when to use clerkClient and when to use createClerkClient
   // specifically why the clerkClient doens't take in options like createClerkClient does
   // https://clerk.com/docs/references/backend/overview#create-clerk-client-options
@@ -32,8 +34,10 @@ export async function POST(req: Request) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
   }
 
+  const session = event.data.object as Stripe.Checkout.Session
+  const orgId = session.client_reference_id!
+
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session
 
     // fetch the line items to get the purchased price ID
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
@@ -47,7 +51,6 @@ export async function POST(req: Request) {
     }
 
     // Figure out which organization to update by looking at the client reference id from  pricing table
-    const orgId = session.client_reference_id!
 
     // Update Clerk org based on plan
     if (plan === 'pro') {
@@ -55,27 +58,36 @@ export async function POST(req: Request) {
       await clerk.organizations.updateOrganization(orgId, {
         maxAllowedMemberships: 10,
         privateMetadata: { plan: 'pro' },
+        // roleSetKey: 'initial-role-set',🌟🌟🌟🌟
       })
     }
     if (plan === 'enterprise') {
+      //
       await clerk.organizations.updateOrganization(orgId, {
-        maxAllowedMemberships: 100, // TODO: set to infinity
+        maxAllowedMemberships: 0,
         privateMetadata: { plan: 'enterprise' },
+        // roleSetKey: 'new-role-set',🌟🌟🌟🌟
       })
     }
 
 
     return NextResponse.json({ received: true })
   }
+  if (event.type === 'customer.subscription.deleted') {
+    await clerk.organizations.updateOrganization(orgId, {
+      maxAllowedMemberships: 2,
+      privateMetadata: undefined,
+      // roleSetKey: 'initial-role-set',🌟🌟🌟🌟
+    })
+  }
 
   return NextResponse.json({ received: true })
 }
 
 /* todo:
-- get ord id and pass to pricing table on frontend
-- test webhook works using commands at top of file
+- get ord id and pass to pricing table on frontend. verify on backend. ✅
+- test webhook works using commands at top of file✅
 -create the right roles sets
 - gate content based on permissiosn
-- figure out how to make member limit infinity
-- 
+- figure out how to make member limit infinity ✅
 */

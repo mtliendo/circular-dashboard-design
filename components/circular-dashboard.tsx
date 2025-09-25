@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,10 +32,16 @@ const mockUser = {
 export function CircularDashboard() {
   const [activeSection, setActiveSection] = useState("projects")
   const [projects, setProjects] = useState(mockProjects)
-  const { has } = useAuth()
+  const { has, } = useAuth()
 
-
-
+  useEffect(() => {
+    const fetchOrg = async () => {
+      const res = await fetch("/api/clerk")
+      const data = await res.json()
+      console.log(data)
+    }
+    fetchOrg()
+  }, [])
 
   const deleteProject = (projectId: number) => {
 
