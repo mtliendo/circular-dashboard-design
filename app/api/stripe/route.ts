@@ -10,9 +10,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-08
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 // Map Stripe price IDs -> your internal plans
-const PLAN_BY_PRICE: Record<string, 'free' | 'pro'> = {
-  'price_123_PRO_MONTHLY': 'pro',
-  'price_456_PRO_YEARLY': 'pro',
+const PLAN_BY_PRICE: Record<string, 'pro' | 'enterprise'> = {
+  'price_1SB0sLEq3PQJrkWnYi6NMnCe': 'enterprise',
+  'price_1SB0s8Eq3PQJrkWnTrxhGeBM': 'pro',
 }
 
 export async function POST(req: Request) {
@@ -35,26 +35,20 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    // Option A: read plan/org from metadata if you set it when creating the session
-    const orgIdFromMeta = (session.metadata?.orgId as string) || null
-    let plan: 'free' | 'pro' | null = (session.metadata?.plan as any) || null
-
-    // Option B (robust): fetch the line items to get the purchased price ID
-    if (!plan) {
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 5 })
-      const first = lineItems.data[0]
-      const priceId = (first?.price as Stripe.Price | null)?.id
-      plan = priceId ? PLAN_BY_PRICE[priceId] ?? null : null
-    }
+    // fetch the line items to get the purchased price ID
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
+    const first = lineItems.data[0]
+    const priceId = (first?.price as Stripe.Price | null)?.id
+    const plan = priceId ? PLAN_BY_PRICE[priceId] ?? null : null
 
     if (!plan) {
       console.warn('No plan resolved for session', session.id)
       return NextResponse.json({ received: true })
     }
 
-    // Figure out which organization to update.
+    // Figure out which organization to update by looking at the client reference id
     // Prefer passing orgId in session.metadata when you created the session.
-    const orgId = orgIdFromMeta ?? /* fallback: look up from customer or your DB */ null
+    const orgId = session.client_reference_id ?? /* fallback: look up from customer or your DB */ null
     if (!orgId) {
       console.warn('No orgId available for session', session.id)
       return NextResponse.json({ received: true })
@@ -68,15 +62,13 @@ export async function POST(req: Request) {
         maxAllowedMemberships: 10,
         privateMetadata: { plan: 'pro' },
       })
-    } else if (plan === 'free') {
+    }
+    else if (plan === 'enterprise') {
       await clerk.organizations.updateOrganization(orgId, {
-        maxAllowedMemberships: 2,
-        privateMetadata: { plan: 'free' },
+        maxAllowedMemberships: 100, // TODO: set to infinity
+        privateMetadata: { plan: 'enterprise' },
       })
     }
-
-    // (Optional) also store plan on the *membership* or user, if your app checks that too
-    // await clerkClient.organizations.updateOrganizationMetadata(orgId, { entitlements: { members: plan === 'pro' ? 10 : 2 } })
 
     return NextResponse.json({ received: true })
   }

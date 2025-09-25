@@ -13,6 +13,7 @@ declare global {
       'stripe-pricing-table': {
         'pricing-table-id': string
         'publishable-key': string
+        'client-reference-id'?: string
       }
     }
   }
@@ -56,12 +57,13 @@ export function PricingPage() {
           </p>
         </div>
 
-        {/* Stripe Pricing Table */}
+        {/* Stripe Pricing Table -- needs to pass clerk org id to the pricing table */}
         <div className="mb-16">
           <Script src="https://js.stripe.com/v3/pricing-table.js" />
           <stripe-pricing-table
             pricing-table-id="prctbl_1SB0ydEq3PQJrkWnG2SnFUb2"
-            publishable-key="pk_test_51SAxb9Eq3PQJrkWnffKNilKA8DTrZa4t4VRPKO88UzCZbgt83wawAEJN655a0F19dFQGhx3UXlsDE77ScHk7YCN700s9rtj8mj">
+            publishable-key="pk_test_51SAxb9Eq3PQJrkWnffKNilKA8DTrZa4t4VRPKO88UzCZbgt83wawAEJN655a0F19dFQGhx3UXlsDE77ScHk7YCN700s9rtj8mj"
+            client-reference-id={clerkOrgId}>
           </stripe-pricing-table>
         </div>
 
