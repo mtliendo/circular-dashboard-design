@@ -47,9 +47,7 @@ export function LandingPage() {
                 <Link href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
                   Pricing
                 </Link>
-                <Link href="#customers" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Customers
-                </Link>
+
               </div>
             </div>
 
@@ -68,6 +66,9 @@ export function LandingPage() {
                 <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
                   Dashboard
                 </Link>
+                <Button variant="outline" size="lg" asChild>
+                  <UserButton />
+                </Button>
               </div>
             </SignedIn>
           </div>
@@ -380,14 +381,7 @@ export function LandingPage() {
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/pricing">
-                View detailed pricing
-                <ArrowRightIcon className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+
         </div>
       </section>
 

@@ -14,25 +14,21 @@ import {
   Search,
   MoreHorizontal,
   Trash2,
-  Settings,
+  Settings, // add this  
   Bell,
   User,
 } from "lucide-react"
 import Link from "next/link"
-import { OrganizationSwitcher, useAuth, UserButton } from "@clerk/nextjs"
+import { OrganizationSwitcher, useAuth, UserButton, useUser } from "@clerk/nextjs"
 
 // Mock data
 const mockProjects = [{ id: 1, name: "Demo Project #1", status: "active", tasks: 8, members: 3 }]
-
-const mockUser = {
-  name: "Michael",
-  email: "michael@company.com",
-}
 
 export function CircularDashboard() {
   const [activeSection, setActiveSection] = useState("projects")
   const [projects, setProjects] = useState(mockProjects)
   const { has, } = useAuth()
+  const { user } = useUser()
 
   useEffect(() => {
     const fetchOrg = async () => {
@@ -127,7 +123,7 @@ export function CircularDashboard() {
               <User className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">{mockUser.name}</p>
+              <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.firstName}</p>
               <p className="text-xs text-muted-foreground truncate">Pro Plan</p>
             </div>
           </div>
@@ -235,7 +231,7 @@ export function CircularDashboard() {
           {activeSection === "home" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-balance">Welcome back, {mockUser.name}</h2>
+                <h2 className="text-2xl font-semibold text-balance">Welcome back, {user?.firstName}</h2>
                 <p className="text-muted-foreground">Here's what's happening with your projects</p>
               </div>
 
