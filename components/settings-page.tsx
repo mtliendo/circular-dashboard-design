@@ -2,8 +2,15 @@
 
 import { OrganizationProfile } from "@clerk/nextjs"
 import { dark } from "@clerk/themes"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Search, Bell, User } from "lucide-react"
+import Link from "next/link"
+import { UserButton } from "@clerk/nextjs"
 
 export function SettingsPage() {
+
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="absolute inset-0 hero-grid-bg animate-grid-pulse"></div>
@@ -25,6 +32,38 @@ export function SettingsPage() {
         <div className="w-24 h-24 bg-accent/10 rounded-full blur-xl"></div>
       </div>
 
+
+      <header className="relative z-10 h-16 border-b border-border/50 backdrop-blur-sm bg-background/80 flex items-center justify-between px-6">
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full border-2 border-primary bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+              <div className="w-3 h-3 rounded-full bg-primary"></div>
+            </div>
+            <span className="text-xl font-bold">Circular</span>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search..." className="pl-10 w-64 bg-muted border-0" />
+          </div>
+          <Button variant="ghost" size="icon">
+            <Bell className="w-4 h-4" />
+          </Button>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "w-8 h-8",
+                userButtonPopoverCard: "bg-card border-border/50",
+                userButtonPopoverActionButton: "text-foreground hover:bg-muted/50",
+                userButtonPopoverActionButtonText: "text-foreground",
+                userButtonPopoverFooter: "hidden"
+              }
+            }}
+          />
+        </div>
+      </header>
 
       <div className="relative z-10 p-6">
         <div className="max-w-4xl mx-auto">
