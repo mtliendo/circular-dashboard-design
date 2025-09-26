@@ -56,9 +56,7 @@ export function LandingPage() {
             <div className="flex items-center space-x-4">
               <SignedOut>
                 <Button asChild>
-                  <SignInButton>
-                    <span>Sign in</span>
-                  </SignInButton>
+                  <Link href="/sign-in">Sign in</Link>
                 </Button>
               </SignedOut>
 

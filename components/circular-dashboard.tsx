@@ -19,7 +19,7 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
-import { OrganizationSwitcher, useAuth } from "@clerk/nextjs"
+import { OrganizationSwitcher, useAuth, UserButton } from "@clerk/nextjs"
 
 // Mock data
 const mockProjects = [{ id: 1, name: "Demo Project #1", status: "active", tasks: 8, members: 3 }]
@@ -162,6 +162,9 @@ export function CircularDashboard() {
             </Button>
             <Button variant="ghost" size="icon" asChild>
               <OrganizationSwitcher />
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <UserButton />
             </Button>
           </div>
         </header>
