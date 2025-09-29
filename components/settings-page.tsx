@@ -10,7 +10,6 @@ import { UserButton } from "@clerk/nextjs"
 
 export function SettingsPage() {
 
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="absolute inset-0 hero-grid-bg animate-grid-pulse"></div>

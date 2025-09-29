@@ -13,7 +13,7 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline"
 import Link from "next/link"
-import { SignedOut, SignedIn, OrganizationSwitcher, OrganizationList, CreateOrganization, UserProfile, UserButton, SignInButton } from "@clerk/nextjs"
+import { SignedOut, SignedIn, UserButton, } from "@clerk/nextjs"
 
 export function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
@@ -23,7 +23,7 @@ export function LandingPage() {
     setIsVisible(true)
     const timer = setTimeout(() => {
       setShowCheckmark(true)
-    }, 3000)
+    }, 2000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -99,15 +99,6 @@ export function LandingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 relative z-10">
           <div className="text-center">
-            <div
-              className={`transition-all duration-1000 ${isVisible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
-            >
-              <Badge variant="secondary" className="mb-6 px-4 py-2">
-                <span className="text-primary font-medium">New:</span>
-                <span className="ml-2">Advanced Project Analytics</span>
-                <span className="ml-2 text-primary">Learn more</span>
-              </Badge>
-            </div>
 
             <div
               className={`transition-all duration-1000 delay-200 ${isVisible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
@@ -186,18 +177,14 @@ export function LandingPage() {
                     <ArrowRightIcon className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button variant="outline" size="lg" className="px-8 py-4 text-lg bg-transparent" asChild>
-                  <Link href="#demo">Watch demo</Link>
-                </Button>
+
               </div>
             </div>
 
             <div
               className={`transition-all duration-1000 delay-800 ${isVisible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
             >
-              <p className="text-sm text-muted-foreground mt-8">
-                Over 50,000 teams use Circular to build better products faster.
-              </p>
+
             </div>
           </div>
         </div>
@@ -211,56 +198,21 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-16 border-b border-border/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-muted-foreground">Trusted by teams at</p>
-          </div>
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            {["Vercel", "Linear", "Stripe", "GitHub", "Figma", "Notion"].map((company) => (
-              <div key={company} className="text-2xl font-semibold text-muted-foreground">
-                {company}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="py-20 grid-bg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { value: "10x", label: "faster", sublabel: "issue resolution" },
-              { value: "99%", label: "uptime", sublabel: "guaranteed SLA" },
-              { value: "500%", label: "increase", sublabel: "in team velocity" },
-              { value: "2min", label: "setup", sublabel: "time to value" },
-            ].map((stat, index) => (
-              <div key={index} className="text-center p-6 rounded-xl bg-card/50 border border-border/50">
-                <div className="text-4xl font-bold text-primary mb-2">{stat.value}</div>
-                <div className="text-lg font-medium text-foreground">{stat.label}</div>
-                <div className="text-sm text-muted-foreground">{stat.sublabel}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <div className="relative -mt-1">
-        <svg className="w-full h-20 text-primary/20" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <svg className="w-full h-16 text-background" viewBox="0 0 1200 120" preserveAspectRatio="none">
           <defs>
-            <linearGradient id="seamlessWave" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--background))" stopOpacity="1" />
-              <stop offset="30%" stopColor="#0ea5e9" stopOpacity="0.15" />
-              <stop offset="70%" stopColor="#06b6d4" stopOpacity="0.2" />
+            <linearGradient id="seamlessFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="hsl(var(--muted))" stopOpacity="0.3" />
+              <stop offset="50%" stopColor="#14b8a6" stopOpacity="0.1" />
               <stop offset="100%" stopColor="hsl(var(--background))" stopOpacity="1" />
             </linearGradient>
           </defs>
           <path
-            d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V120H0Z"
-            fill="url(#seamlessWave)"
-            className="animate-wave-flow"
+            d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"
+            fill="url(#seamlessFlow)"
+            className="animate-curve-flow"
           />
         </svg>
       </div>
@@ -335,20 +287,20 @@ export function LandingPage() {
                 name: "Free",
                 price: "$0",
                 description: "Perfect for small teams getting started",
-                features: ["Up to 5 team members", "Unlimited projects", "Basic analytics", "Community support"],
+                features: ["Up to 2 team members", "Unlimited projects",],
               },
               {
                 name: "Pro",
-                price: "$12",
+                price: "$10",
                 description: "Advanced features for growing teams",
-                features: ["Unlimited team members", "Advanced analytics", "Priority support", "Custom workflows"],
+                features: ["10 team members", "Unlimited projects",],
                 popular: true,
               },
               {
                 name: "Enterprise",
-                price: "Custom",
+                price: "$200",
                 description: "Full control for large organizations",
-                features: ["SSO & advanced security", "Dedicated support", "Custom integrations", "SLA guarantee"],
+                features: ["Unlimited team members", "Unlimited projects", "Fine-grained access control", "Developer access"],
               },
             ].map((plan, index) => (
               <div
@@ -385,43 +337,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      <div className="relative -mt-1">
-        <svg className="w-full h-16 text-background" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="seamlessFlow" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--muted))" stopOpacity="0.3" />
-              <stop offset="50%" stopColor="#14b8a6" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="hsl(var(--background))" stopOpacity="1" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"
-            fill="url(#seamlessFlow)"
-            className="animate-curve-flow"
-          />
-        </svg>
-      </div>
 
-      {/* CTA Section */}
-      <section className="py-24 grid-bg">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to build at the speed of thought?</h2>
-          <p className="text-xl text-muted-foreground mb-10">
-            Join thousands of teams already shipping faster with Circular.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="px-8 py-4 text-lg" asChild>
-              <Link href="/dashboard">
-                Start building for free
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="px-8 py-4 text-lg bg-transparent">
-              Talk to sales
-            </Button>
-          </div>
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-12">
@@ -434,22 +351,14 @@ export function LandingPage() {
               <span className="text-xl font-bold">Circular</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground transition-colors">
-                Privacy
-              </Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">
-                Terms
-              </Link>
-              <Link href="/security" className="hover:text-foreground transition-colors">
-                Security
-              </Link>
-              <Link href="/contact" className="hover:text-foreground transition-colors">
-                Contact
-              </Link>
+
+
+              Made with 💙 by the Focus Otter 🦦
+
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-            © 2025 Circular. All rights reserved.
+            © {new Date().getFullYear()} Circular. All rights reserved.
           </div>
         </div>
       </footer>

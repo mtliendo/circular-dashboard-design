@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { clerkClient, createClerkClient } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 
 // 1. stripe listen --forward-to localhost:3000/api/stripe
 // 2. use apps pricing table to test webhook
@@ -18,10 +18,8 @@ const PLAN_BY_PRICE: Record<string, 'pro' | 'enterprise'> = {
 export async function POST(req: Request) {
   console.log("secret key", process.env.CLERK_SECRET_KEY!)
   console.log('endpoint secret', endpointSecret)
-  // ask Kyle when to use clerkClient and when to use createClerkClient
-  // specifically why the clerkClient doens't take in options like createClerkClient does
-  // https://clerk.com/docs/references/backend/overview#create-clerk-client-options
-  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! })
+
+  const clerk = await clerkClient()
 
   const sig = req.headers.get('stripe-signature')
   if (!sig) return new NextResponse('Missing stripe-signature', { status: 400 })
