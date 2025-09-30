@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Plus, Edit, Trash2, Save, X } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@clerk/nextjs"
 
 // Mock data structure
 interface Task {
@@ -105,12 +106,16 @@ const mockProjectsWithTasks: Project[] = [
 
 export function ProjectDetailPage({ projectId }: { projectId: number }) {
   const router = useRouter()
+  const { has } = useAuth()
   const [project, setProject] = useState<Project | null>(null)
   const [isEditingProject, setIsEditingProject] = useState(false)
   const [editedProject, setEditedProject] = useState<Partial<Project>>({})
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false)
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
   const [newTask, setNewTask] = useState({ title: "", description: "" })
+
+  const canCreateTask = has?.({ permission: "tasks:write" })
+  const canDeleteTask = has?.({ permission: "tasks:delete" })
 
   useEffect(() => {
     const foundProject = mockProjectsWithTasks.find((p) => p.id === projectId)
@@ -314,46 +319,48 @@ export function ProjectDetailPage({ projectId }: { projectId: number }) {
                   {totalTasks} tasks • {completedTasks} completed
                 </p>
               </div>
-              <Dialog open={isCreateTaskOpen} onOpenChange={setIsCreateTaskOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    Add Task
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create New Task</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="task-title">Title</Label>
-                      <Input
-                        id="task-title"
-                        value={newTask.title}
-                        onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                        placeholder="Enter task title..."
-                      />
+              {canCreateTask && (
+                <Dialog open={isCreateTaskOpen} onOpenChange={setIsCreateTaskOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2">
+                      <Plus className="w-4 h-4" />
+                      Add Task
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Task</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="task-title">Title</Label>
+                        <Input
+                          id="task-title"
+                          value={newTask.title}
+                          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                          placeholder="Enter task title..."
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="task-description">Description</Label>
+                        <Textarea
+                          id="task-description"
+                          value={newTask.description}
+                          onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                          placeholder="Enter task description..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsCreateTaskOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleCreateTask}>Create Task</Button>
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="task-description">Description</Label>
-                      <Textarea
-                        id="task-description"
-                        value={newTask.description}
-                        onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                        placeholder="Enter task description..."
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setIsCreateTaskOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleCreateTask}>Create Task</Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -412,14 +419,16 @@ export function ProjectDetailPage({ projectId }: { projectId: number }) {
                           >
                             <Edit className="w-3 h-3" />
                           </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleDeleteTask(task.id)}
-                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
+                          {canDeleteTask && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleDeleteTask(task.id)}
+                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     )}

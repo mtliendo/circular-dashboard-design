@@ -198,8 +198,6 @@ export function LandingPage() {
         </div>
       </section>
 
-
-
       <div className="relative -mt-1">
         <svg className="w-full h-16 text-background" viewBox="0 0 1200 120" preserveAspectRatio="none">
           <defs>

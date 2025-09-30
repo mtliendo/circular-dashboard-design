@@ -8,19 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import {
   Home,
   FolderOpen,
-  CreditCard,
   Code,
   Plus,
   Search,
   MoreHorizontal,
   Trash2,
-  Settings, // add this  
+  Settings,
   Bell,
   User,
 } from "lucide-react"
 import Link from "next/link"
 import { OrganizationSwitcher, useAuth, UserButton, useUser } from "@clerk/nextjs"
-
 // Mock data
 const mockProjects = [{ id: 1, name: "Demo Project #1", status: "active", tasks: 8, members: 3 }]
 
@@ -33,8 +31,7 @@ export function CircularDashboard() {
   useEffect(() => {
     const fetchOrg = async () => {
       const res = await fetch("/api/clerk")
-      const data = await res.json()
-      console.log(data)
+      await res.json()
     }
     fetchOrg()
   }, [])
@@ -92,28 +89,18 @@ export function CircularDashboard() {
             Projects
           </Button>
 
-          {has?.({ permission: "developer_access:can_read" }) && (
+
+
+          {has?.({ permission: "api:read" }) && (
             <Button
-              variant={activeSection === "billing" ? "secondary" : "ghost"}
+              variant={activeSection === "developer" ? "secondary" : "ghost"}
               className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-              onClick={() => setActiveSection("billing")}
+              onClick={() => setActiveSection("developer")}
             >
-              <CreditCard className="w-4 h-4 mr-3" />
-              Billing
+              <Code className="w-4 h-4 mr-3" />
+              Developer
             </Button>
           )}
-
-
-
-          <Button
-            variant={activeSection === "developer" ? "secondary" : "ghost"}
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-            onClick={() => setActiveSection("developer")}
-          >
-            <Code className="w-4 h-4 mr-3" />
-            Developer
-          </Button>
-
         </nav>
 
         {/* User Info */}
@@ -175,12 +162,12 @@ export function CircularDashboard() {
                   <h2 className="text-lg font-medium">Your Projects</h2>
                   <p className="text-sm text-muted-foreground">Manage and organize your work</p>
                 </div>
-
-                <Button onClick={createProject} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create Project
-                </Button>
-
+                {has?.({ permission: "projects:write" }) && (
+                  <Button onClick={createProject} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Project
+                  </Button>
+                )}
               </div>
 
               {/* Projects Grid */}
@@ -200,15 +187,16 @@ export function CircularDashboard() {
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
-
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteProject(project.id)}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          {has?.({ permission: "projects:delete" }) && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => deleteProject(project.id)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
 
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal className="w-4 h-4" />

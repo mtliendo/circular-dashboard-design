@@ -81,11 +81,3 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ received: true })
 }
-
-/* todo:
-- get ord id and pass to pricing table on frontend. verify on backend. ✅
-- test webhook works using commands at top of file✅
--create the right roles sets
-- gate content based on permissiosn
-- figure out how to make member limit infinity ✅
-*/
