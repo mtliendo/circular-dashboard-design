@@ -4,7 +4,8 @@ import { redirect } from "next/navigation"
 
 export default async function Developer() {
   const { has } = await auth()
-  if (!has?.({ permission: "developer:read" })) {
+  const developerCanRead = has?.({ permission: "developer:read" })
+  if (!developerCanRead) {
     return redirect("/dashboard")
   }
   return <DeveloperPage />
