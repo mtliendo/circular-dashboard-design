@@ -91,16 +91,16 @@ export function CircularDashboard() {
 
 
 
-          {has?.({ permission: "api:read" }) && (
-            <Button
-              variant={activeSection === "developer" ? "secondary" : "ghost"}
-              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-              onClick={() => setActiveSection("developer")}
-            >
+          <Button
+            variant={activeSection === "developer" ? "secondary" : "ghost"}
+            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+            asChild
+          >
+            <Link href="/dashboard/developer" className="flex items-center">
               <Code className="w-4 h-4 mr-3" />
               Developer
-            </Button>
-          )}
+            </Link>
+          </Button>
         </nav>
 
         {/* User Info */}
@@ -288,26 +288,7 @@ export function CircularDashboard() {
             </div>
           )}
 
-          {activeSection === "developer" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-medium">Developer Settings</h2>
-                <p className="text-sm text-muted-foreground">API keys and developer tools</p>
-              </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>API Access</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">Manage your API keys and integrations</p>
-                  <Button asChild>
-                    <Link href="/dashboard/developer">Manage API Keys</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          )}
         </main>
       </div>
     </div>
