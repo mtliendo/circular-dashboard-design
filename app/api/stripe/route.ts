@@ -21,6 +21,7 @@ export async function POST(req: Request) {
 
   const clerk = await clerkClient()
 
+
   const sig = req.headers.get('stripe-signature')
   if (!sig) return new NextResponse('Missing stripe-signature', { status: 400 })
 
@@ -56,15 +57,25 @@ export async function POST(req: Request) {
       await clerk.organizations.updateOrganization(orgId, {
         maxAllowedMemberships: 10,
         privateMetadata: { plan: 'pro' },
-        // roleSetKey: 'initial-role-set',🌟🌟🌟🌟
       })
+
+
     }
     if (plan === 'enterprise') {
       //
       await clerk.organizations.updateOrganization(orgId, {
         maxAllowedMemberships: 0,
         privateMetadata: { plan: 'enterprise' },
-        // roleSetKey: 'new-role-set',🌟🌟🌟🌟
+      })
+      fetch(`https://api.clerk.com/v1/organizations/${orgId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`
+        },
+        body: JSON.stringify({
+          role_set_key: 'role_set:enterprise_role'
+        })
       })
     }
 
@@ -75,7 +86,17 @@ export async function POST(req: Request) {
     await clerk.organizations.updateOrganization(orgId, {
       maxAllowedMemberships: 2,
       privateMetadata: undefined,
-      // roleSetKey: 'initial-role-set',🌟🌟🌟🌟
+    })
+
+    fetch(`https://api.clerk.com/v1/organizations/${orgId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`
+      },
+      body: JSON.stringify({
+        role_set_key: 'role_set:initial'
+      })
     })
   }
 
